@@ -7,8 +7,7 @@
 		<transition name="slide">
 			<search-modal v-show="searching"
 			              class="search-modal"
-			              @stopSearching="toggleSearch"
-			              @nameSearch="$emit('nameSearch')">
+			              @stopSearching="toggleSearch">
 			</search-modal>
 		</transition>
 
@@ -41,6 +40,7 @@
 	import SearchModal from '@/components/SearchModal'
 
 	export default {
+		name: "NavBar",
 		components: { SearchModal },
 		data() {
 			return {

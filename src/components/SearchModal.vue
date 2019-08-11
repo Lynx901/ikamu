@@ -10,32 +10,21 @@
 				<label for="selector-participants"><i class="icon icon-people"></i></label>
 				<select id="selector-participants" class="filter-selector">
 					<option selected value="">Participants</option>
-					<option>1-5 participants</option>
-					<option>5-10 participants</option>
-					<option>+10 participants</option>
+					<option v-for="participant in participants">{{ participant }}</option>
 				</select>
 			</div>
 			<div class="filter">
 				<label for="selector-duration"><i class="icon icon-time"></i></label>
 				<select id="selector-duration" class="filter-selector">
 					<option selected value="">Duration</option>
-					<option>< 30min</option>
-					<option>30min - 1h</option>
-					<option>1h - 2h</option>
-					<option>+2h</option>
+					<option v-for="duration in durations">{{ duration }}</option>
 				</select>
 			</div>
 			<div class="filter">
 				<label for="selector-category"><i class="icon icon-categories"></i></label>
 				<select id="selector-category" class="filter-selector">
 					<option selected value="">Category</option>
-					<option>Para conocerse</option>
-					<option>Pruebas pequeñas</option>
-					<option>De pensar</option>
-					<option>Pasar el rato</option>
-					<option>De confianza</option>
-					<option>Por equipos</option>
-					<option>Reflexiones</option>
+					<option v-for="category in categories">{{ category }}</option>
 				</select>
 			</div>
 		</section>
@@ -44,9 +33,27 @@
 
 <script>
 	export default {
-		methods: {
-			discardSearch () {
-				console.log("discarding");
+		name: "SearchModal",
+		data() {
+			return {
+				participants: [
+					"1-5 participants",
+					"5-10 participants",
+					"+10 participants"
+				],
+				durations: [
+					"< 30min",
+					"30min - 1h",
+					"1h - 2h",
+					"+2h"
+				],
+				categories: ["Para conocerse",
+					"Pruebas pequeñas",
+					"De pensar",
+					"Pasar el rato",
+					"De confianza",
+					"Por equipos",
+					"Reflexiones"]
 			}
 		}
 	}
