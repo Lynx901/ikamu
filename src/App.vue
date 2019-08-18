@@ -9,12 +9,7 @@
 	import NavBar from '@/components/NavBar'
 
 	export default {
-		components: { NavBar },
-		data() {
-			return {
-				searchQuery: null
-			}
-		}
+		components: { NavBar }
 	}
 </script>
 
@@ -45,6 +40,10 @@
 			.content {
 				margin-top: $navbar-height;
 				padding: 30px 50px;
+
+				@media (max-width: 625px) {
+					padding: 30px 20px;
+				}
 			}
 		}
 	}

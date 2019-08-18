@@ -38,18 +38,19 @@
 
 <script>
 	import SearchModal from '@/components/SearchModal'
+	import { mapState} from "vuex";
 
 	export default {
 		name: "NavBar",
 		components: { SearchModal },
-		data() {
-			return {
-				searching: false
-			}
+		computed: {
+			...mapState({
+				searching: state => state.searching
+			})
 		},
 		methods: {
 			toggleSearch() {
-				this.searching = !this.searching
+				this.$store.commit('toggleSearch')
 			}
 		}
 	}
@@ -73,6 +74,8 @@
 		padding: 0 50px;
 
 		@media (max-width: 625px) {
+			padding: 0 20px;
+
 			.can-hide {
 				display: none;
 			}

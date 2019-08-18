@@ -1,30 +1,33 @@
 <template>
 	<aside class="search-container">
-		<i class="icon icon-close-cross close-button" title="Discard the search" @click="$emit('stopSearching')"></i>
+		<i class="icon icon-close-cross close-button" title="Discard the search" @click="toggleSearch"></i>
 		<div class="input-container">
 			<i class="icon icon-search"></i>
-			<input type="text" placeholder="Buscar por nombre..." class="input-field" @change="$emit('nameSearch', $event.target.value)">
+			<input type="text" placeholder="Buscar por nombre..." class="input-field" v-model="searchQuery">
 		</div>
 		<section class="filters">
-			<div class="filter">
+			<div class="filter" :class="{ active: participantsQuery}">
 				<label for="selector-participants"><i class="icon icon-people"></i></label>
-				<select id="selector-participants" class="filter-selector">
-					<option selected value="">Participants</option>
-					<option v-for="participant in participants">{{ participant }}</option>
+				<select id="selector-participants" class="filter-selector"
+				        v-model="participantsQuery" :class="{ active: participantsQuery}">
+					<option selected :value="null">Participants</option>
+					<option v-for="participant in participants" :value="participant.identifier">{{ participant.text }}</option>
 				</select>
 			</div>
-			<div class="filter">
+			<div class="filter" :class="{ active: durationsQuery}">
 				<label for="selector-duration"><i class="icon icon-time"></i></label>
-				<select id="selector-duration" class="filter-selector">
-					<option selected value="">Duration</option>
-					<option v-for="duration in durations">{{ duration }}</option>
+				<select id="selector-duration" class="filter-selector"
+						v-model="durationsQuery" :class="{ active: durationsQuery}">
+					<option selected :value="null">Duration</option>
+					<option v-for="duration in durations" :value="duration.identifier">{{ duration.text }}</option>
 				</select>
 			</div>
-			<div class="filter">
+			<div class="filter" :class="{ active: categoriesQuery}">
 				<label for="selector-category"><i class="icon icon-categories"></i></label>
-				<select id="selector-category" class="filter-selector">
-					<option selected value="">Category</option>
-					<option v-for="category in categories">{{ category }}</option>
+				<select id="selector-category" class="filter-selector"
+						v-model="categoriesQuery" :class="{ active: categoriesQuery}">
+					<option selected :value="null">Category</option>
+					<option v-for="category in categories" :value="category.identifier">{{ category.text }}</option>
 				</select>
 			</div>
 		</section>
@@ -32,29 +35,59 @@
 </template>
 
 <script>
+	import {mapMutations, mapState} from "vuex";
+	import typesParticipants from "@/constants/types-participants";
+	import typesDurations from "@/constants/types-durations";
+	import typesCategories from "@/constants/types-categories";
+
 	export default {
 		name: "SearchModal",
 		data() {
 			return {
-				participants: [
-					"1-5 participants",
-					"5-10 participants",
-					"+10 participants"
-				],
-				durations: [
-					"< 30min",
-					"30min - 1h",
-					"1h - 2h",
-					"+2h"
-				],
-				categories: ["Para conocerse",
-					"Pruebas pequeñas",
-					"De pensar",
-					"Pasar el rato",
-					"De confianza",
-					"Por equipos",
-					"Reflexiones"]
+				participants: typesParticipants,
+				durations: typesDurations,
+				categories: typesCategories
 			}
+		},
+		computed: {
+			searchQuery: {
+				get () {
+					return this.$store.state.searchQuery
+				},
+				set (value) {
+					this.$store.commit('updateSearchQuery', value)
+				}
+			},
+			participantsQuery: {
+				get () {
+					return this.$store.state.participantsQuery
+				},
+				set (value) {
+					this.$store.commit('updateParticipantsQuery', value)
+				}
+			},
+			durationsQuery: {
+				get () {
+					return this.$store.state.durationsQuery
+				},
+				set (value) {
+					this.$store.commit('updateDurationsQuery', value)
+				}
+			},
+			categoriesQuery: {
+				get () {
+					return this.$store.state.categoriesQuery
+				},
+				set (value) {
+					this.$store.commit('updateCategoriesQuery', value)
+				}
+			},
+			...mapState({
+				searching: state => state.searching
+			})
+		},
+		methods: {
+			...mapMutations(['toggleSearch'])
 		}
 	}
 </script>
@@ -131,9 +164,15 @@
 				margin-bottom: 5px;
 				display: flex;
 				align-items: center;
+				flex-wrap: nowrap;
 
 				&:last-child {
 					margin-right: -1px;
+				}
+
+				&.active {
+					background-color: white;
+					color: $primary-color;
 				}
 
 				.icon {
@@ -150,13 +189,22 @@
 					color: white;
 					outline: none;
 
+					&.active {
+						color: $primary-color;
+					}
+
 					&:focus {
 						margin-bottom: -2px;
 						border-bottom: 2px solid white;
 					}
 				}
+
+				@media (max-width: 625px) {
+					margin-right: 5px;
+				}
 			}
 		}
+
 		@media (max-width: 1130px) {
 			position: absolute;
 			top: 0;
