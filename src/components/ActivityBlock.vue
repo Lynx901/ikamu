@@ -1,22 +1,68 @@
 <template>
-	<article class="activity" :class="['category-' + activity.category, {'not-opened': !opened}]">
-		<header class="name">
-			<h2>{{ activity.name }}</h2>
+	<article class="activity" :class="['category-' + activity.category, {'not-opened': !opened}, {'creating': creating}]">
+		<header v-if="!creating" class="name">
+			<h2  :title="activity.name">{{ activity.name }}</h2>
 			<i @click="opened = !opened" class="icon" :class="[{'icon-arrow-down': !opened}, {'icon-arrow-up': opened}]"></i>
 		</header>
-		<ul class="information">
+		<header v-else class="name">
+			<label>
+				<input placeholder="Título" class="name-input">
+			</label>
+		</header>
+		<ul v-if="!creating" class="information">
 			<li><i class="icon icon-categories"></i>{{ getCategoryText(activity.category) }}</li>
 			<li><i class="icon icon-people"></i>{{ getParticipantsText(activity.participants) }}</li>
 			<li><i class="icon icon-time"></i>{{ getDurationText(activity.duration) }}</li>
 		</ul>
-		<p v-if="opened" class="development">{{ activity.development }}</p>
+		<ul v-else class="information">
+			<li>
+				<label>
+					<i class="icon icon-categories"></i>
+					<select class="information-select" v-model="activity.category" required>
+						<option :value="null" disabled>Selecciona la categoría...</option>
+						<option v-for="category in categories" :value="category.identifier">{{ category.text }}</option>
+					</select>
+				</label>
+			</li>
+			<li>
+				<label>
+					<i class="icon icon-people"></i>
+					<select class="information-select" v-model="activity.participants" required>
+						<option :value="null" disabled>Selecciona el número de participantes...</option>
+						<option v-for="participant in participants" :value="participant.identifier">{{ participant.text }}</option>
+					</select>
+				</label>
+			</li>
+			<li>
+				<label>
+					<i class="icon icon-time"></i>
+					<select class="information-select" v-model="activity.duration" required>
+						<option :value="null" disabled>Selecciona la duración aproximada...</option>
+						<option v-for="duration in durations" :value="duration.identifier">{{ duration.text }}</option>
+					</select>
+				</label>
+			</li>
+		</ul>
+		<p v-if="opened && !creating" class="development">{{ activity.development }}</p>
+		<p v-else-if="creating" class="development">
+			<label>
+				<textarea class="development-input" id="development" placeholder="Escribe el desarrollo de la actividad…"></textarea>
+			</label>
+		</p>
 		<footer class="data">
 			<div class="data-upload">
-			<p class="creator">{{ truncateName(activity.creator) }}</p>
-			{{ sinceDate }}
-			<time class="date" :title="localizeDate(activity.createdAt)">{{ formatDate(activity.createdAt) }}</time>
+				<p v-if="!creating" class="creator" :title="activity.creator">{{ truncateName(activity.creator) }}</p>
+				<p v-else class="creator">
+					<label>
+						<input placeholder="Tu nombre..." class="data-input">
+					</label>
+				</p>
+				<span v-if="!creating">
+					{{ sinceDate }}
+					<time class="date" :title="localizeDate(activity.createdAt)">{{ formatDate(activity.createdAt) }}</time>
+				</span>
 			</div>
-			<div class="data-likes">
+			<div v-if="!creating" class="data-likes">
 				{{ activity.likes }}
 				<i class="icon icon-heart"></i>
 			</div>
@@ -31,7 +77,30 @@
 
 	export default {
 		name: "ActivityBlock",
-		props: ['activity'],
+		props: {
+			activity: {
+				required: true
+			},
+			creating: {
+				default: false
+			}
+		},
+		mounted() {
+			let tx = document.getElementById('development');
+			if(tx) {
+				let activity = tx.parentElement.parentElement.parentElement;
+				tx.setAttribute('style', 'height:' + (tx.scrollHeight) + 'px;overflow-y:hidden;');
+				activity.setAttribute('style', 'min-height: 310px');
+				tx.addEventListener("input", onInput, false);
+			}
+
+			function onInput() {
+				let activity = this.parentElement.parentElement.parentElement;
+				this.style.height = 'auto';
+				this.style.height = (this.scrollHeight) + 'px';
+				activity.style.minHeight = 264 + (this.scrollHeight) + 'px';
+			}
+		},
 		data() {
 			return {
 				participants: typesParticipants,
@@ -141,7 +210,6 @@
 			}
 
 			.icon {
-				font-family: Noteworthy-Bold, fantasy;
 				font-size: 22px;
 				color: #FFFFFF;
 
@@ -152,6 +220,31 @@
 					cursor: pointer;
 				}
 			}
+
+			.name-input {
+				margin-bottom: 10px;
+				width: 100%;
+
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+
+				color: white;
+				background-color: transparent;
+				border: none;
+				font-family: Noteworthy-Bold, fantasy;
+				font-size: 28px;
+
+				border-bottom: 1px solid white;
+
+				&:focus {
+					outline: none;
+				}
+
+				&::placeholder {
+					color: rgba(255, 255, 255, 0.5);
+				}
+			}
 		}
 
 		.information {
@@ -159,6 +252,7 @@
 			list-style: none;
 
 			margin-bottom: 20px;
+			font-size: 14px;
 
 			li {
 				margin-bottom: 20px;
@@ -167,6 +261,29 @@
 					margin-right: 10px;
 					position: relative;
 					top: 2px;
+				}
+
+				.information-select {
+					width: 92%;
+
+					color: white;
+					background-color: transparent;
+					border: none;
+					font-size: 14px;
+
+					&:focus {
+						outline: none;
+						margin-bottom: -2px;
+						border-bottom: 2px solid white;
+					}
+
+					&:invalid {
+						color: rgba(255, 255, 255, 0.5);
+					}
+
+					[disabled] {
+						color: rgba(255, 255, 255, 0.5)
+					}
 				}
 			}
 		}
@@ -181,6 +298,33 @@
 			overflow-wrap: break-word;
 			word-wrap: break-word;
 			hyphens: auto;
+
+			.development-input {
+				box-sizing: border-box;
+				width: 100%;
+				resize: none;
+
+				color: white;
+				background-color: transparent;
+				font-size: 16px;
+
+				text-align: justify;
+
+				padding: 5px;
+				border: 1px solid white;
+
+				overflow-wrap: break-word;
+				word-wrap: break-word;
+				hyphens: auto;
+
+				&:focus {
+					outline: none;
+				}
+
+				&::placeholder {
+					color: rgba(255, 255, 255, 0.5);
+				}
+			}
 		}
 
 		.data {
@@ -211,8 +355,34 @@
 					color: $danger-color;
 				}
 			}
+
+			.data-input {
+				width: 100%;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+
+				color: white;
+				font-weight: bold;
+				background-color: transparent;
+				border: none;
+				font-size: 16px;
+
+				border-bottom:  1px solid white;
+
+				&:focus {
+					outline: none;
+				}
+
+				&::placeholder {
+					color: rgba(255, 255, 255, 0.5);
+				}
+			}
 		}
 
+		&.category-null {
+			background-image: linear-gradient(-135deg, #000000 0%, #555555 100%);
+		}
 		&.category-reflexion {
 			background-image: linear-gradient(-135deg, #1A2980 0%, #26D0CE 100%);
 		}
@@ -226,13 +396,13 @@
 			background-image: linear-gradient(-135deg, #C02425 0%, #F0CB35 100%);
 		}
 		&.category-pensar {
-			background-image: linear-gradient(-135deg, #D7DDE8 0%, #757F9A 100%);
+				background-image: linear-gradient(-135deg, #3F3F3F 0%, #757F9A 100%);
 		}
 		&.category-pequeñas {
 			background-image: linear-gradient(-135deg, #A770EF 0%, #FDB99B 100%);
 		}
 		&.category-conocimiento {
-			background-image: linear-gradient(-135deg, #4776E6 0%, #8E54E9 100%);
+			background-image: linear-gradient(-135deg, #8E54E9 0%, #4776E6 100%);
 		}
 
 		&:hover {

@@ -6,6 +6,11 @@
 			<h3 class="red-text" v-else-if="filteredActivities.length < 1">No se han encontrado actividades para estos filtros. Intenta buscar con otros distintos o añade tú una actividad nueva que se ajuste a ellos</h3>
 		</header>
 
+		<section v-if="creating"  class="new-activity">
+			<Activity-Block :activity="newActivity" creating="true">
+			</Activity-Block>
+		</section>
+
 		<section class="activities">
 			<Activity-Block v-for="activity in filteredActivities" :activity="activity">
 			</Activity-Block>
@@ -22,6 +27,8 @@
 		components: { ActivityBlock },
 		computed: {
 			...mapState({
+				newActivity: state => state.newActivity,
+				creating: state => state.creating,
 				activities: state => state.activities,
 				searchQuery: state => state.searchQuery,
 				participantsQuery: state => state.participantsQuery,
@@ -46,6 +53,12 @@
 			.red-text {
 				color: $danger-color;
 			}
+		}
+
+		.new-activity {
+			display: flex;
+			justify-content: center;
+			align-items: center;
 		}
 
 		.activities {

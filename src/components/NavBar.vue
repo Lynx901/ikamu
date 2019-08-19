@@ -20,7 +20,7 @@
 					</i>
 				</router-link>
 			</div>
-			<div class="nav-item">
+			<div class="nav-item" @click="toggleCreation">
 				<i class="icon icon-upload"
 				   role="img"
 				   title="Upload a new activity to the web">
@@ -51,6 +51,9 @@
 		methods: {
 			toggleSearch() {
 				this.$store.commit('toggleSearch')
+			},
+			toggleCreation() {
+				this.$store.commit('toggleCreation')
 			}
 		}
 	}
