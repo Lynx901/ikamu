@@ -253,7 +253,6 @@
 			list-style: none;
 
 			margin-bottom: 20px;
-			font-size: 14px;
 
 			li {
 				margin-bottom: 20px;
@@ -265,12 +264,11 @@
 				}
 
 				.information-select {
-					width: 92%;
+					width: 90%;
 
 					color: white;
 					background-color: transparent;
 					border: none;
-					font-size: 14px;
 
 					&:focus {
 						outline: none;

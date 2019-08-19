@@ -141,8 +141,8 @@
 				}
 
 				&:focus {
-					margin-bottom: -2px;
 					border-bottom: 2px solid white;
+					border-radius: 0;
 				}
 			}
 		}
@@ -211,5 +211,6 @@
 			left: 0;
 			right: 0;
 		}
+
 	}
 </style>
