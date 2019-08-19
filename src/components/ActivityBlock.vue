@@ -6,7 +6,7 @@
 		</header>
 		<header v-else class="name">
 			<label>
-				<input placeholder="Título" class="name-input">
+				<input placeholder="Escribe un título..." class="name-input" v-model="activity.name">
 			</label>
 		</header>
 		<ul v-if="!creating" class="information">
@@ -46,7 +46,7 @@
 		<p v-if="opened && !creating" class="development">{{ activity.development }}</p>
 		<p v-else-if="creating" class="development">
 			<label>
-				<textarea class="development-input" id="development" placeholder="Escribe el desarrollo de la actividad…"></textarea>
+				<textarea class="development-input" id="development" placeholder="Escribe el desarrollo de la actividad…" v-model="activity.development"></textarea>
 			</label>
 		</p>
 		<footer class="data">
@@ -54,7 +54,7 @@
 				<p v-if="!creating" class="creator" :title="activity.creator">{{ truncateName(activity.creator) }}</p>
 				<p v-else class="creator">
 					<label>
-						<input placeholder="Tu nombre..." class="data-input">
+						<input placeholder="Escribe tu nombre..." class="data-input" v-model="activity.creator">
 					</label>
 				</p>
 				<span v-if="!creating">
@@ -236,6 +236,7 @@
 				font-size: 28px;
 
 				border-bottom: 1px solid white;
+				border-radius: 0;
 
 				&:focus {
 					outline: none;
@@ -273,8 +274,8 @@
 
 					&:focus {
 						outline: none;
-						margin-bottom: -2px;
-						border-bottom: 2px solid white;
+						border-bottom: 1px solid white;
+						border-radius: 0;
 					}
 
 					&:invalid {
@@ -312,6 +313,7 @@
 
 				padding: 5px;
 				border: 1px solid white;
+				border-radius: 0;
 
 				overflow-wrap: break-word;
 				word-wrap: break-word;
@@ -368,13 +370,15 @@
 				border: none;
 				font-size: 16px;
 
-				border-bottom:  1px solid white;
+				border-bottom: 1px solid white;
+				border-radius: 0;
 
 				&:focus {
 					outline: none;
 				}
 
 				&::placeholder {
+					font-weight: normal;
 					color: rgba(255, 255, 255, 0.5);
 				}
 			}
@@ -387,7 +391,7 @@
 			background-image: linear-gradient(-135deg, #1A2980 0%, #26D0CE 100%);
 		}
 		&.category-equipo {
-			background-image: linear-gradient(45deg, #EE0979 0%, #3B4371 100%);
+			background-image: linear-gradient(-135deg, #3B4371 0%, #EE0979 100%);
 		}
 		&.category-confianza {
 			background-image: linear-gradient(-135deg, #0F3443 0%, #34E89E 100%);
@@ -396,7 +400,7 @@
 			background-image: linear-gradient(-135deg, #C02425 0%, #F0CB35 100%);
 		}
 		&.category-pensar {
-				background-image: linear-gradient(-135deg, #3F3F3F 0%, #757F9A 100%);
+			background-image: linear-gradient(-135deg, #3F3F3F 0%, #757F9A 100%);
 		}
 		&.category-pequeñas {
 			background-image: linear-gradient(-135deg, #A770EF 0%, #FDB99B 100%);
