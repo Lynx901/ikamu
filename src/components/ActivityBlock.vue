@@ -1,24 +1,27 @@
 <template>
-	<article class="activity" :class="['category-' + activity.category, {'not-opened': !opened}, {'creating': creating}]">
+	<article class="activity" :class="['category-' + activity.category.identifier, {'not-opened': !opened}, {'creating': creating}]">
 		<header v-if="!creating" class="name">
 			<h2  :title="activity.name">{{ activity.name }}</h2>
 			<i @click="opened = !opened" class="icon" :class="[{'icon-arrow-down': !opened}, {'icon-arrow-up': opened}]"></i>
 		</header>
 		<header v-else class="name">
-			<label>
-				<input placeholder="Escribe un título..." class="name-input" v-model="activity.name">
-			</label>
+			<fieldset class="help">
+				<legend>Título</legend>
+				<label>
+					<input placeholder="Escribe un título..." class="name-input" v-model="activity.name">
+				</label>
+			</fieldset>
 		</header>
 		<ul v-if="!creating" class="information">
-			<li><i class="icon icon-categories"></i>{{ getCategoryText(activity.category) }}</li>
-			<li><i class="icon icon-people"></i>{{ getParticipantsText(activity.participants) }}</li>
-			<li><i class="icon icon-time"></i>{{ getDurationText(activity.duration) }}</li>
+			<li><i class="icon icon-categories"></i>{{ activity.category.text }}</li>
+			<li><i class="icon icon-people"></i>{{ activity.participants.text }}</li>
+			<li><i class="icon icon-time"></i>{{ activity.duration.text }}</li>
 		</ul>
 		<ul v-else class="information">
 			<li>
 				<label>
 					<i class="icon icon-categories"></i>
-					<select class="information-select" v-model="activity.category" required>
+					<select class="information-select" v-model="activity.category.identifier" required>
 						<option :value="null" disabled>Selecciona la categoría...</option>
 						<option v-for="category in categories" :value="category.identifier">{{ category.text }}</option>
 					</select>
@@ -27,7 +30,7 @@
 			<li>
 				<label>
 					<i class="icon icon-people"></i>
-					<select class="information-select" v-model="activity.participants" required>
+					<select class="information-select" v-model="activity.participants.identifier" required>
 						<option :value="null" disabled>Selecciona el número de participantes...</option>
 						<option v-for="participant in participants" :value="participant.identifier">{{ participant.text }}</option>
 					</select>
@@ -36,7 +39,7 @@
 			<li>
 				<label>
 					<i class="icon icon-time"></i>
-					<select class="information-select" v-model="activity.duration" required>
+					<select class="information-select" v-model="activity.duration.identifier" required>
 						<option :value="null" disabled>Selecciona la duración aproximada...</option>
 						<option v-for="duration in durations" :value="duration.identifier">{{ duration.text }}</option>
 					</select>
@@ -44,19 +47,21 @@
 			</li>
 		</ul>
 		<p v-if="opened && !creating" class="development">{{ activity.development }}</p>
-		<p v-else-if="creating" class="development">
+		<fieldset v-if="creating" class="development help">
+			<legend>Desarrollo</legend>
 			<label>
 				<textarea class="development-input" id="development" placeholder="Escribe el desarrollo de la actividad…" v-model="activity.development"></textarea>
 			</label>
-		</p>
+		</fieldset>
 		<footer class="data">
 			<div class="data-upload">
 				<p v-if="!creating" class="creator" :title="activity.creator">{{ truncateName(activity.creator) }}</p>
-				<p v-else class="creator">
+				<fieldset v-if="creating" class="help">
+					<legend>Autor</legend>
 					<label>
 						<input placeholder="Escribe tu nombre..." class="data-input" v-model="activity.creator">
 					</label>
-				</p>
+				</fieldset>
 				<span v-if="!creating">
 					{{ sinceDate }}
 					<time class="date" :title="localizeDate(activity.createdAt)">{{ formatDate(activity.createdAt) }}</time>
@@ -64,7 +69,7 @@
 			</div>
 			<div v-if="!creating" class="data-likes">
 				{{ activity.likes }}
-				<i class="icon icon-heart"></i>
+				<i class="icon icon-heart" @click="addLike(activity.id)"></i>
 			</div>
 		</footer>
 	</article>
@@ -74,6 +79,7 @@
 	import typesParticipants from "@/constants/types-participants";
 	import typesDurations from "@/constants/types-durations";
 	import typesCategories from "@/constants/types-categories";
+	import {mapMutations} from "vuex";
 
 	export default {
 		name: "ActivityBlock",
@@ -90,7 +96,7 @@
 			if(tx) {
 				let activity = tx.parentElement.parentElement.parentElement;
 				tx.setAttribute('style', 'height:' + (tx.scrollHeight) + 'px;overflow-y:hidden;');
-				activity.setAttribute('style', 'min-height: 310px');
+				activity.setAttribute('style', 'min-height: 370px');
 				tx.addEventListener("input", onInput, false);
 			}
 
@@ -98,7 +104,7 @@
 				let activity = this.parentElement.parentElement.parentElement;
 				this.style.height = 'auto';
 				this.style.height = (this.scrollHeight) + 'px';
-				activity.style.minHeight = 264 + (this.scrollHeight) + 'px';
+				activity.style.minHeight = 334 + (this.scrollHeight) + 'px';
 			}
 		},
 		data() {
@@ -111,15 +117,9 @@
 			}
 		},
 		methods: {
-			getCategoryText(category) {
-				return this.categories.find((cat) => {return cat["identifier"] === category})["text"];
-			},
-			getParticipantsText(participants) {
-				return this.participants.find((part) => {return part["identifier"] === participants})["text"];
-			},
-			getDurationText(duration) {
-				return this.durations.find((dur) => {return dur["identifier"] === duration})["text"];
-			},
+			...mapMutations([
+				'addLike'
+			]),
 			truncateName(name) {
 				if(name.length > 10) return name.slice(0, name.indexOf(" ", (name.indexOf(" ")+1)));
 			},
@@ -309,9 +309,7 @@
 
 				text-align: justify;
 
-				padding: 5px;
-				border: 1px solid white;
-				border-radius: 0;
+				border: none;
 
 				overflow-wrap: break-word;
 				word-wrap: break-word;
@@ -380,6 +378,11 @@
 					color: rgba(255, 255, 255, 0.5);
 				}
 			}
+		}
+
+		.help {
+			color: white;
+			border: none;
 		}
 
 		&.category-null {

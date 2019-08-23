@@ -6,7 +6,7 @@
 			<h3 class="red-text" v-else-if="filteredActivities.length < 1">No se han encontrado actividades para estos filtros. Intenta buscar con otros distintos o añade tú una actividad nueva que se ajuste a ellos</h3>
 		</header>
 
-		<section v-if="creating"  class="new-activity">
+		<section v-if="creating" class="new-activity">
 			<Activity-Block :activity="newActivity" creating="true">
 			</Activity-Block>
 			<form>
@@ -14,7 +14,7 @@
 					<i class="icon icon-email"></i>
 					<input class="email-input" placeholder="Escribe tu email..." v-model="newActivity.creatorEmail">
 				</label>
-				<button class="activity-send">Enviar</button>
+				<button class="activity-send" @click="sendActivity">Enviar</button>
 				<button class="activity-cancel" @click="cancelActivity">Descartar la nueva actividad</button>
 			</form>
 		</section>

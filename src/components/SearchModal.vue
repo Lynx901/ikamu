@@ -10,7 +10,7 @@
 				<label for="selector-participants"><i class="icon icon-people"></i></label>
 				<select id="selector-participants" class="filter-selector"
 				        v-model="participantsQuery" :class="{ active: participantsQuery}">
-					<option selected :value="null">Participants</option>
+					<option selected :value="null">Participantes</option>
 					<option v-for="participant in participants" :value="participant.identifier">{{ participant.text }}</option>
 				</select>
 			</div>
@@ -18,7 +18,7 @@
 				<label for="selector-duration"><i class="icon icon-time"></i></label>
 				<select id="selector-duration" class="filter-selector"
 						v-model="durationsQuery" :class="{ active: durationsQuery}">
-					<option selected :value="null">Duration</option>
+					<option selected :value="null">Duración</option>
 					<option v-for="duration in durations" :value="duration.identifier">{{ duration.text }}</option>
 				</select>
 			</div>
@@ -26,7 +26,7 @@
 				<label for="selector-category"><i class="icon icon-categories"></i></label>
 				<select id="selector-category" class="filter-selector"
 						v-model="categoriesQuery" :class="{ active: categoriesQuery}">
-					<option selected :value="null">Category</option>
+					<option selected :value="null">Categoría</option>
 					<option v-for="category in categories" :value="category.identifier">{{ category.text }}</option>
 				</select>
 			</div>

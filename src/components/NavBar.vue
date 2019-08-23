@@ -16,20 +16,20 @@
 				<router-link to="/info">
 					<i class="icon icon-info"
 					   role="img"
-					   title="Info about the webapp">
+					   title="Información sobre la aplicación">
 					</i>
 				</router-link>
 			</div>
 			<div class="nav-item" @click="toggleCreation">
 				<i class="icon icon-upload"
 				   role="img"
-				   title="Upload a new activity to the web">
+				   title="Subir una nueva actividad">
 				</i>
 			</div>
 			<div class="nav-item" @click="toggleSearch">
 				<i class="icon icon-search"
 				   role="img"
-				   title="Search activities with filters">
+				   title="Buscar actividades con filtros">
 				</i>
 			</div>
 		</nav>
@@ -141,6 +141,10 @@
 					:hover {
 						@include activatedLink;
 					}
+				}
+
+				@media (max-width: 450px) {
+					margin-left: 20px;
 				}
 
 			}
