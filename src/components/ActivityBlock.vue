@@ -79,7 +79,6 @@
 	import typesParticipants from "@/constants/types-participants";
 	import typesDurations from "@/constants/types-durations";
 	import typesCategories from "@/constants/types-categories";
-	import { mapMutations } from "vuex";
 
 	export default {
 		name: "ActivityBlock",
@@ -198,10 +197,9 @@
 		min-width: 350px;
 		max-width: 350px;
 		min-height: 235px;
+		height: 100%;
 
 		&.not-opened {
-			max-height: 245px;
-
 			.name h2 {
 				white-space: nowrap;
 				overflow: hidden;
