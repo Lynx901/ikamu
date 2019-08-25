@@ -17,6 +17,7 @@ const easyFirestore = VuexEasyFirestore(
 const storeData = {
 	plugins: [easyFirestore],
 	state: {
+		showConfirmation: false,
 		creating: false,
 		searching: (window.innerWidth > 1130),
 		searchQuery: null,
@@ -38,8 +39,14 @@ const storeData = {
 		}
 	},
 	getters: {
+		activeFilter: state => {
+			return (state.participantsQuery || state.durationsQuery || state.categoriesQuery);
+		},
 		filteredActivities: state => {
-			let act = Object.values(state.activities.data);
+			let act = Object.values(state.activities.data).sort((a, b) => {
+				return new Date(b.createdAt.seconds * 1000) - new Date(a.createdAt.seconds * 1000);
+			});
+
 			if(act.length > 0) {
 				let returnActivities = act;
 
@@ -49,19 +56,19 @@ const storeData = {
 
 				if (state.participantsQuery) {
 					returnActivities = returnActivities.filter(activity => {
-						return activity.participants === state.participantsQuery;
+						return activity.participants.identifier === state.participantsQuery;
 					})
 				}
 
 				if (state.durationsQuery) {
 					returnActivities = returnActivities.filter(activity => {
-						return activity.duration === state.durationsQuery;
+						return activity.duration.identifier === state.durationsQuery;
 					})
 				}
 
 				if (state.categoriesQuery) {
 					returnActivities = returnActivities.filter(activity => {
-						return activity.category === state.categoriesQuery;
+						return activity.category.identifier === state.categoriesQuery;
 					})
 				}
 
@@ -97,6 +104,29 @@ const storeData = {
 		updateCategoriesQuery(state, query) {
 			state.categoriesQuery = query;
 		},
+		deleteFilters(state) {
+			state.searchQuery = null;
+			state.participantsQuery = null;
+			state.durationsQuery = null;
+			state.categoriesQuery = null;
+		},
+		sendActivity(state) {
+			state.newActivity.active = true;
+			this.dispatch("activities/set", state.newActivity);
+			state.newActivity = {
+				"active": false,
+				"name": null,
+				"participants": null,
+				"duration": null,
+				"category": null,
+				"development": null,
+				"creator": null,
+				"likes": 0,
+				"createdAt": new Date()
+			};
+			state.creating = false;
+			state.showConfirmation = true;
+		},
 		cancelActivity(state) {
 			state.newActivity = {
 				"active": false,
@@ -123,7 +153,6 @@ initFirebase()
 		// take user to a page stating an error occurred
 		// (might be a connection error, or the app is open in another tab)
 	});
-
 
 store.dispatch('activities/openDBChannel')
 	.then()

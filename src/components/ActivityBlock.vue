@@ -21,27 +21,27 @@
 			<li>
 				<label>
 					<i class="icon icon-categories"></i>
-					<select class="information-select" v-model="activity.category.identifier" required>
-						<option :value="null" disabled>Selecciona la categoría...</option>
-						<option v-for="category in categories" :value="category.identifier">{{ category.text }}</option>
+					<select class="information-select" v-model="activity.category" required>
+						<option :value="{'identifier': null, 'text': null}" disabled>Selecciona la categoría...</option>
+						<option v-for="category in categories" :value="category">{{ category.text }}</option>
 					</select>
 				</label>
 			</li>
 			<li>
 				<label>
 					<i class="icon icon-people"></i>
-					<select class="information-select" v-model="activity.participants.identifier" required>
-						<option :value="null" disabled>Selecciona el número de participantes...</option>
-						<option v-for="participant in participants" :value="participant.identifier">{{ participant.text }}</option>
+					<select class="information-select" v-model="activity.participants" required>
+						<option :value="{'identifier': null, 'text': null}" disabled>Selecciona el número de participantes...</option>
+						<option v-for="participant in participants" :value="participant">{{ participant.text }}</option>
 					</select>
 				</label>
 			</li>
 			<li>
 				<label>
 					<i class="icon icon-time"></i>
-					<select class="information-select" v-model="activity.duration.identifier" required>
-						<option :value="null" disabled>Selecciona la duración aproximada...</option>
-						<option v-for="duration in durations" :value="duration.identifier">{{ duration.text }}</option>
+					<select class="information-select" v-model="activity.duration" required>
+						<option :value="{'identifier': null, 'text': null}" disabled>Selecciona la duración aproximada...</option>
+						<option v-for="duration in durations" :value="duration">{{ duration.text }}</option>
 					</select>
 				</label>
 			</li>
@@ -68,8 +68,8 @@
 				</span>
 			</div>
 			<div v-if="!creating" class="data-likes">
-				{{ activity.likes }}
-				<i class="icon icon-heart" @click="addLike(activity.id)"></i>
+				{{ likes }}
+				<i class="icon icon-heart" @click="likes += 1"></i>
 			</div>
 		</footer>
 	</article>
@@ -79,7 +79,7 @@
 	import typesParticipants from "@/constants/types-participants";
 	import typesDurations from "@/constants/types-durations";
 	import typesCategories from "@/constants/types-categories";
-	import {mapMutations} from "vuex";
+	import { mapMutations } from "vuex";
 
 	export default {
 		name: "ActivityBlock",
@@ -116,15 +116,33 @@
 				sinceDate: "hace"
 			}
 		},
+		computed:{
+			likes: {
+				set(value) {
+					this.$store.dispatch("activities/patch", { id: this.activity.id, likes: value });
+				},
+				get() {
+					return this.$store.state.activities.data[this.activity.id].likes
+				}
+			}
+		},
 		methods: {
-			...mapMutations([
-				'addLike'
-			]),
 			truncateName(name) {
-				if(name.length > 10) return name.slice(0, name.indexOf(" ", (name.indexOf(" ")+1)));
+				let indexFirstSpace = name.indexOf(" ");
+				let indexSecondSpace = name.indexOf(" ", (indexFirstSpace+1));
+				let truncatedName = "Alguien";
+				if(-1 !== indexSecondSpace) {
+					if(name.length > 10) truncatedName = name.slice(0, indexSecondSpace);
+				} else if(-1 !== indexFirstSpace){
+					truncatedName = name.slice(0, indexFirstSpace).toString();
+					if(name.length > 10) truncatedName = name.slice(0, indexFirstSpace).toString();
+				} else {
+					truncatedName = name.slice(0, 10);
+				}
+				return truncatedName;
 			},
 			localizeDate(date) {
-				let dateObject = new Date(date);
+				let dateObject = new Date(date.seconds*1000);
 				let months = [
 					"enero",
 					"febrero",
@@ -144,7 +162,7 @@
 			formatDate(date) {
 				let dateToRet = "no se sabe cuando";
 				let day = 86400000;
-				let difference = new Date() - new Date(date);
+				let difference = new Date() - new Date(date.seconds*1000);
 				if(difference < day) {
 					dateToRet = "un rato";
 				} else if(day <= difference && difference < (day*7)) {

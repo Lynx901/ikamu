@@ -4,19 +4,23 @@
 			<h3 v-if="filteredActivities.length > 1">{{ filteredActivities.length }} actividades encontradas</h3>
 			<h3 v-else-if="filteredActivities.length === 1">1 actividad encontrada</h3>
 			<h3 class="red-text" v-else-if="filteredActivities.length < 1">No se han encontrado actividades para estos filtros. Intenta buscar con otros distintos o añade tú una actividad nueva que se ajuste a ellos</h3>
+			<span v-if="activeFilter" @click="deleteFilters" class="filter-delete"><i class="icon icon-close-cross"></i>Borrar todos los filtros</span>
 		</header>
 
 		<section v-if="creating" class="new-activity">
 			<Activity-Block :activity="newActivity" creating="true">
 			</Activity-Block>
-			<form>
+			<form @submit.prevent="sendActivity">
 				<label class="email">
 					<i class="icon icon-email"></i>
 					<input class="email-input" placeholder="Escribe tu email..." v-model="newActivity.creatorEmail">
 				</label>
-				<button class="activity-send" @click="sendActivity">Enviar</button>
+				<button type="submit" class="activity-send">Enviar</button>
 				<button class="activity-cancel" @click="cancelActivity">Descartar la nueva actividad</button>
 			</form>
+		</section>
+		<section v-if="showConfirmation" class="confirmation-message">
+			<h3>¡La actividad se ha enviado correctamente!</h3>
 		</section>
 
 		<section class="activities">
@@ -36,6 +40,7 @@
 		computed: {
 			...mapState({
 				newActivity: state => state.newActivity,
+				showConfirmation: state => state.showConfirmation,
 				creating: state => state.creating,
 				activities: state => state.activities,
 				searchQuery: state => state.searchQuery,
@@ -44,12 +49,12 @@
 				categoriesQuery: state => state.categoriesQuery
 			}),
 			...mapGetters([
-				'filteredActivities'
+				'filteredActivities', "activeFilter"
 			])
 		},
 		methods: {
 			...mapMutations([
-				'cancelActivity'
+				'deleteFilters', 'cancelActivity', 'sendActivity'
 			])
 		}
 	}
@@ -62,6 +67,28 @@
 		.activities-count {
 			color: $primary-color;
 			margin-bottom: 20px;
+			display: flex;
+			align-items: center;
+
+			.filter-delete {
+				margin-left: 20px;
+
+				background-color: $primary-color;
+				color: white;
+
+				padding: 5px 10px;
+
+				border-radius: 5px;
+
+				cursor: pointer;
+
+				.icon {
+					margin-right: 10px;
+
+					position: relative;
+					top: 2px;
+				}
+			}
 
 			.red-text {
 				color: $danger-color;
@@ -178,6 +205,15 @@
 			@media (max-width: 880px) {
 				flex-direction: column;
 			}
+		}
+
+		.confirmation-message {
+			background-color: $vue-color;
+			color: white;
+			padding: 20px;
+			text-align: center;
+			border-radius: 5px;
+			margin-bottom: 20px;
 		}
 
 		.activities {
