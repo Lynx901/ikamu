@@ -1,51 +1,68 @@
 <template>
 	<main>
-		<header class="activities-count">
+		<header v-if="!loading" class="activities-count">
 			<h3 v-if="activities.length > 1">{{ activities.length }} actividades encontradas</h3>
 			<h3 v-else-if="activities.length === 1">1 actividad encontrada</h3>
 			<h3 class="red-text" v-else-if="activities.length < 1">No se han encontrado actividades para estos filtros. Intenta buscar con otros distintos o añade tú una actividad nueva que se ajuste a ellos</h3>
 			<span v-if="activeFilter" @click="deleteFilters" class="filter-delete"><i class="icon icon-close-cross"></i>Borrar todos los filtros</span>
 		</header>
 
-		<section v-if="creating" class="new-activity">
+		<section v-if="creating && !loading" class="new-activity">
 			<Activity-Block :activity="newActivity" creating="true">
 			</Activity-Block>
-			<form @submit.prevent="sendActivity">
-				<label class="email">
-					<i class="icon icon-email"></i>
-					<input class="email-input" placeholder="Escribe tu email..." v-model="newActivity.creatorEmail">
-				</label>
-				<button type="submit" class="activity-send">Enviar</button>
+			<div class="form">
+				<form @submit.prevent="sendActivity">
+					<label class="email">
+						<i class="icon icon-email"></i>
+						<input class="email-input" placeholder="Escribe tu email..." v-model="newActivity.creatorEmail">
+					</label>
+					<button type="submit" class="activity-send">Enviar</button>
+				</form>
 				<button class="activity-cancel" @click="cancelActivity">Descartar la nueva actividad</button>
-			</form>
+			</div>
 		</section>
 		<section v-if="showConfirmation" class="confirmation-message">
 			<h3>¡La actividad se ha enviado correctamente!</h3>
 		</section>
 
-		<section class="activities">
+		<section v-if="!loading" class="activities">
 			<Activity-Block v-for="activity in activities" :activity="activity">
 			</Activity-Block>
+		</section>
+		<section v-else class="loading">
+			<i class="icon icon-spinner"
+			   role="img"
+			   title="Las actividades está cargando...">
+			</i>
+			<h1>Cargando actividades...</h1>
 		</section>
 	</main>
 </template>
 
 <script>
-	import {mapState, mapGetters} from 'vuex';
+	import {mapState, mapGetters, mapActions} from 'vuex';
 	import ActivityBlock from "../components/ActivityBlock";
 
 	export default {
 		name: "Home",
 		components: { ActivityBlock },
+		data() {
+			return {
+				loading: false
+			}
+		},
 		computed: {
 			...mapState({
 				newActivity: state => state.activities.newActivity,
-				showConfirmation: state => state.activities.showConfirmation,
-				creating: state => state.activities.creating,
-				searchQuery: state => state.activities.searchQuery,
-				participantsQuery: state => state.activities.participantsQuery,
-				durationsQuery: state => state.activities.durationsQuery,
-				categoriesQuery: state => state.activities.categoriesQuery
+				showConfirmation: state => state.activities.confirmation,
+				creating: state => state.activities.creating
+			}),
+
+			...mapState({
+				searchQuery: state => state.app.searchQuery,
+				participantsQuery: state => state.app.participantsQuery,
+				durationsQuery: state => state.app.durationsQuery,
+				categoriesQuery: state => state.app.categoriesQuery
 			}),
 
 			...mapGetters('activities', {
@@ -56,11 +73,19 @@
 				return this.searchQuery !== null
 					|| this.participantsQuery !== null
 					|| this.durationsQuery !== null
-					|| this.categoriesQuery !== null
+					|| this.categoriesQuery !== null;
 			}
 		},
-		methods: {
 
+		methods: {
+			...mapActions('activities', ['fetchActivities', 'sendActivity', 'cancelActivity']),
+			...mapActions('app', ['deleteFilters'])
+		},
+
+		created () {
+			this.loading = true;
+			this.fetchActivities()
+				.then(() => this.loading = false);
 		}
 	}
 </script>
@@ -105,6 +130,8 @@
 			justify-content: center;
 			align-items: center;
 
+			margin-bottom: 50px;
+
 			.activity {
 				margin-right: 50px;
 
@@ -114,7 +141,7 @@
 				}
 			}
 
-			form {
+			.form {
 				display: flex;
 				flex-direction: column;
 				justify-content: center;
@@ -156,7 +183,8 @@
 				}
 
 				.activity-send {
-					margin-bottom: 40px;
+					width: 100%;
+					margin-bottom: 20px;
 
 					border: none;
 					font-size: 16px;
@@ -182,28 +210,28 @@
 						margin-bottom: 20px;
 					}
 				}
+			}
 
-				.activity-cancel {
-					color: $danger-color;
-					border: none;
-					font-size: 16px;
-					border-radius: 5px;
+			.activity-cancel {
+				color: $danger-color;
+				border: none;
+				font-size: 16px;
+				border-radius: 5px;
 
-					padding: 10px 0;
+				padding: 10px 0;
 
-					&:hover {
-						cursor: pointer;
-						background-color: rgba(234, 77, 70, 0.2);
-					}
+				&:hover {
+					cursor: pointer;
+					background-color: rgba(234, 77, 70, 0.2);
+				}
 
-					&:focus {
-						outline: none;
-					}
+				&:focus {
+					outline: none;
+				}
 
-					@media (max-width: 880px) {
-						padding: 20px 0;
-						margin-bottom: 100px;
-					}
+				@media (max-width: 880px) {
+					padding: 20px 0;
+					margin-bottom: 100px;
 				}
 			}
 
@@ -225,6 +253,35 @@
 			display: flex;
 			flex-wrap: wrap;
 			justify-content: center;
+		}
+
+		.loading {
+			margin-top: 50px;
+			width: 95%;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+
+			.icon {
+				font-size: 50px;
+				line-height: 33px;
+				animation: spin 3000ms linear infinite;
+				margin-bottom: 20px;
+			}
+
+			@-moz-keyframes spin {
+				from { -moz-transform: rotate(0deg); }
+				to { -moz-transform: rotate(360deg); }
+			}
+			@-webkit-keyframes spin {
+				from { -webkit-transform: rotate(0deg); }
+				to { -webkit-transform: rotate(360deg); }
+			}
+			@keyframes spin {
+				from {transform:rotate(0deg);}
+				to {transform:rotate(360deg);}
+			}
 		}
 	}
 </style>

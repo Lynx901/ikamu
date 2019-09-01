@@ -1,6 +1,6 @@
 <template>
 	<aside class="search-container">
-		<i class="icon icon-close-cross close-button" title="Discard the search" @click="toggleSearch"></i>
+		<i class="icon icon-close-cross close-button" title="Discard the search" @click="$emit('stopSearching')"></i>
 		<div class="input-container">
 			<i class="icon icon-search"></i>
 			<input type="text" placeholder="Buscar por nombre..." class="input-field" v-model="searchQuery">
@@ -17,7 +17,7 @@
 			<div class="filter" :class="{ active: durationsQuery}">
 				<label for="selector-duration"><i class="icon icon-time"></i></label>
 				<select id="selector-duration" class="filter-selector"
-						v-model="durationsQuery" :class="{ active: durationsQuery}">
+				        v-model="durationsQuery" :class="{ active: durationsQuery}">
 					<option selected :value="null">Duración</option>
 					<option v-for="duration in durations" :value="duration.identifier">{{ duration.text }}</option>
 				</select>
@@ -25,7 +25,7 @@
 			<div class="filter" :class="{ active: categoriesQuery}">
 				<label for="selector-category"><i class="icon icon-categories"></i></label>
 				<select id="selector-category" class="filter-selector"
-						v-model="categoriesQuery" :class="{ active: categoriesQuery}">
+				        v-model="categoriesQuery" :class="{ active: categoriesQuery}">
 					<option selected :value="null">Categoría</option>
 					<option v-for="category in categories" :value="category.identifier">{{ category.text }}</option>
 				</select>
@@ -35,7 +35,6 @@
 </template>
 
 <script>
-	import {mapMutations, mapState} from "vuex";
 	import typesParticipants from "@/constants/types-participants";
 	import typesDurations from "@/constants/types-durations";
 	import typesCategories from "@/constants/types-categories";
@@ -51,43 +50,21 @@
 		},
 		computed: {
 			searchQuery: {
-				get () {
-					return this.$store.state.searchQuery
-				},
-				set (value) {
-					this.$store.commit('updateSearchQuery', value)
-				}
+				get () { return this.$store.state.app.searchQuery },
+				set (value) { this.$store.commit('app/setSearchQuery', value) }
 			},
 			participantsQuery: {
-				get () {
-					return this.$store.state.participantsQuery
-				},
-				set (value) {
-					this.$store.commit('updateParticipantsQuery', value)
-				}
+				get () { return this.$store.state.app.participantsQuery },
+				set (value) { this.$store.commit('app/setParticipantsQuery', value) }
 			},
 			durationsQuery: {
-				get () {
-					return this.$store.state.durationsQuery
-				},
-				set (value) {
-					this.$store.commit('updateDurationsQuery', value)
-				}
+				get () { return this.$store.state.app.durationsQuery },
+				set (value) { this.$store.commit('app/setDurationsQuery', value) }
 			},
 			categoriesQuery: {
-				get () {
-					return this.$store.state.categoriesQuery
-				},
-				set (value) {
-					this.$store.commit('updateCategoriesQuery', value)
-				}
-			},
-			...mapState({
-				searching: state => state.searching
-			})
-		},
-		methods: {
-			...mapMutations(['toggleSearch'])
+				get () { return this.$store.state.app.categoriesQuery },
+				set (value) { this.$store.commit('app/setCategoriesQuery', value) }
+			}
 		}
 	}
 </script>

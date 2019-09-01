@@ -1,25 +1,23 @@
+
 export default {
-	sendActivity({state, commit}) {
+	fetchActivities({dispatch}) {
+		return new Promise((resolve, reject) => {
+			dispatch('fetchAndAdd')
+				.then(() => resolve());
+		})
+	},
+
+	sendActivity({state, commit, dispatch}) {
 		commit('activeNewActivity');
-		this.dispatch("index/set", state.newActivity);
+		dispatch("set", state.newActivity);
 		commit('emptyNewActivity');
 		commit('setCreating', false);
 		commit('setConfirmation', true);
-		setTimeout(() => commit('setConfirmation', false), 5000);
+		setTimeout(() => commit('setConfirmation', false), 10000);
 	},
 
-	cancelActivity(state) {
-		state.newActivity = {
-			"active": false,
-			"name": null,
-			"participants": null,
-			"duration": null,
-			"category": null,
-			"development": null,
-			"creator": null,
-			"likes": 0,
-			"createdAt": new Date()
-		};
-		state.creating = false;
+	cancelActivity({commit}) {
+		commit('emptyNewActivity');
+		commit('setCreating', false);
 	}
 }

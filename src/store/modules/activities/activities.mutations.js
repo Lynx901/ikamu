@@ -1,18 +1,10 @@
 export default {
-	setSearchQuery(state, query) {
-		state.searchQuery = query;
+	toggleCreation(state) {
+		state.creating = !state.creating;
 	},
 
-	setParticipantsQuery(state, query) {
-		state.participantsQuery = query;
-	},
-
-	setDurationsQuery(state, query) {
-		state.durationsQuery = query;
-	},
-
-	setCategoriesQuery(state, query) {
-		state.categoriesQuery = query;
+	activeNewActivity(state) {
+		state.newActivity.active = true;
 	},
 
 	setCreating(state, value) {

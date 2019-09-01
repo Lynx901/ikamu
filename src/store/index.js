@@ -16,17 +16,14 @@ const easyFirestore = VuexEasyFirestore(
 const storeData = {
 	plugins: [easyFirestore],
 
+	//Firebase modules should only be passed in the easyFirestore const, not here
 	modules: {
-		activities,
 		app
 	},
 
 	state: {},
-
 	getters: {},
-
 	actions: {},
-
 	mutations: {}
 };
 
@@ -39,9 +36,5 @@ initFirebase()
 		// take user to a page stating an error occurred
 		// (might be a connection error, or the app is open in another tab)
 	});
-
-store.dispatch('activities/openDBChannel')
-	.then()
-	.catch(console.error);
 
 export default store;

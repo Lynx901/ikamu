@@ -1,3 +1,6 @@
 export default {
-	searching: (window.innerWidth > 1130)
+	searchQuery: null,
+	participantsQuery: null,
+	durationsQuery: null,
+	categoriesQuery: null
 }

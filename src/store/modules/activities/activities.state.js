@@ -1,11 +1,7 @@
 export default {
 	activities: [],
 	creating: false,
-	showConfirmation: false,
-	searchQuery: null,
-	participantsQuery: null,
-	durationsQuery: null,
-	categoriesQuery: null,
+	confirmation: false,
 	newActivity: {
 		"id": null,
 		"active": false,

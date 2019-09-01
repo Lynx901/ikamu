@@ -1,8 +1,8 @@
 export default {
-	deleteFilters(state) {
-		state.searchQuery = null;
-		state.participantsQuery = null;
-		state.durationsQuery = null;
-		state.categoriesQuery = null;
+	deleteFilters({state, commit}) {
+		commit('setSearchQuery', null);
+		commit('setParticipantsQuery', null);
+		commit('setDurationsQuery', null);
+		commit('setCategoriesQuery', null);
 	},
 }
