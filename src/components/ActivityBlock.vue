@@ -118,7 +118,7 @@
 		computed:{
 			likes: {
 				set(value) {
-					this.$store.dispatch("activities/patch", { id: this.activity.id, likes: value });
+					this.$store.dispatch("index/patch", { id: this.activity.id, likes: value });
 				},
 				get() {
 					return this.$store.state.activities.data[this.activity.id].likes

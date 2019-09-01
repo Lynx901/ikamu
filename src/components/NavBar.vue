@@ -7,7 +7,7 @@
 		<transition name="slide">
 			<search-modal v-show="searching"
 			              class="search-modal"
-			              @stopSearching="toggleSearch">
+			              @stopSearching="$store.commit('toggleSearch')">
 			</search-modal>
 		</transition>
 
@@ -20,13 +20,13 @@
 					</i>
 				</router-link>
 			</div>
-			<div class="nav-item" @click="toggleCreation">
+			<div class="nav-item" @click="$store.commit('toggleCreation')">
 				<i class="icon icon-upload"
 				   role="img"
 				   title="Subir una nueva actividad">
 				</i>
 			</div>
-			<div class="nav-item" @click="toggleSearch">
+			<div class="nav-item" @click="$store.commit('toggleSearch')">
 				<i class="icon icon-search"
 				   role="img"
 				   title="Buscar actividades con filtros">
@@ -38,7 +38,7 @@
 
 <script>
 	import SearchModal from '@/components/SearchModal'
-	import { mapState} from "vuex";
+	import {mapState} from "vuex";
 
 	export default {
 		name: "NavBar",
@@ -48,14 +48,6 @@
 				searching: state => state.searching
 			})
 		},
-		methods: {
-			toggleSearch() {
-				this.$store.commit('toggleSearch')
-			},
-			toggleCreation() {
-				this.$store.commit('toggleCreation')
-			}
-		}
 	}
 </script>
 

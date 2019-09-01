@@ -1,9 +1,9 @@
 <template>
 	<main>
 		<header class="activities-count">
-			<h3 v-if="filteredActivities.length > 1">{{ filteredActivities.length }} actividades encontradas</h3>
-			<h3 v-else-if="filteredActivities.length === 1">1 actividad encontrada</h3>
-			<h3 class="red-text" v-else-if="filteredActivities.length < 1">No se han encontrado actividades para estos filtros. Intenta buscar con otros distintos o añade tú una actividad nueva que se ajuste a ellos</h3>
+			<h3 v-if="activities.length > 1">{{ activities.length }} actividades encontradas</h3>
+			<h3 v-else-if="activities.length === 1">1 actividad encontrada</h3>
+			<h3 class="red-text" v-else-if="activities.length < 1">No se han encontrado actividades para estos filtros. Intenta buscar con otros distintos o añade tú una actividad nueva que se ajuste a ellos</h3>
 			<span v-if="activeFilter" @click="deleteFilters" class="filter-delete"><i class="icon icon-close-cross"></i>Borrar todos los filtros</span>
 		</header>
 
@@ -24,14 +24,14 @@
 		</section>
 
 		<section class="activities">
-			<Activity-Block v-for="activity in filteredActivities" :activity="activity">
+			<Activity-Block v-for="activity in activities" :activity="activity">
 			</Activity-Block>
 		</section>
 	</main>
 </template>
 
 <script>
-	import {mapState, mapGetters, mapMutations} from 'vuex';
+	import {mapState, mapGetters} from 'vuex';
 	import ActivityBlock from "../components/ActivityBlock";
 
 	export default {
@@ -39,23 +39,28 @@
 		components: { ActivityBlock },
 		computed: {
 			...mapState({
-				newActivity: state => state.newActivity,
-				showConfirmation: state => state.showConfirmation,
-				creating: state => state.creating,
-				activities: state => state.activities,
-				searchQuery: state => state.searchQuery,
-				participantsQuery: state => state.participantsQuery,
-				durationsQuery: state => state.durationsQuery,
-				categoriesQuery: state => state.categoriesQuery
+				newActivity: state => state.activities.newActivity,
+				showConfirmation: state => state.activities.showConfirmation,
+				creating: state => state.activities.creating,
+				searchQuery: state => state.activities.searchQuery,
+				participantsQuery: state => state.activities.participantsQuery,
+				durationsQuery: state => state.activities.durationsQuery,
+				categoriesQuery: state => state.activities.categoriesQuery
 			}),
-			...mapGetters([
-				'filteredActivities', "activeFilter"
-			])
+
+			...mapGetters('activities', {
+				activities: 'filteredActivities'
+			}),
+
+			activeFilter() {
+				return this.searchQuery !== null
+					|| this.participantsQuery !== null
+					|| this.durationsQuery !== null
+					|| this.categoriesQuery !== null
+			}
 		},
 		methods: {
-			...mapMutations([
-				'deleteFilters', 'cancelActivity', 'sendActivity'
-			])
+
 		}
 	}
 </script>
