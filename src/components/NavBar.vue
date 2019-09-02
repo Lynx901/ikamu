@@ -12,14 +12,6 @@
 		</transition>
 
 		<nav class="nav-links">
-			<div class="nav-item">
-				<router-link to="/info">
-					<i class="icon icon-info"
-					   role="img"
-					   title="Información sobre la aplicación">
-					</i>
-				</router-link>
-			</div>
 			<div class="nav-item" @click="toggleCreation">
 				<i class="icon icon-upload"
 				   role="img"
@@ -32,12 +24,32 @@
 				   title="Buscar actividades con filtros">
 				</i>
 			</div>
+			<div class="nav-item">
+				<div v-if="!isUserLoggedIn"
+				     @click="login"
+				     class="login">
+					<i class="icon icon-login"
+					   role="img"
+					   title="Iniciar sesión">
+					</i>
+				</div>
+				<div v-else
+				     @click="logout"
+				     class="logout">
+					<i class="icon icon-power-off"
+					   role="img"
+					   title="Cerrar sesión">
+					</i>
+					<p class="userName">{{ user.user.displayName }}</p>
+				</div>
+			</div>
 		</nav>
 	</header>
 </template>
 
 <script>
 	import SearchModal from '@/components/SearchModal'
+	import {mapActions, mapGetters, mapState} from "vuex";
 
 	export default {
 		name: "NavBar",
@@ -47,7 +59,19 @@
 				searching: (window.innerWidth > 1130)
 			}
 		},
+
+		computed: {
+			...mapState('authentication', {
+				user: 'user'
+			}),
+
+			...mapGetters('authentication', {
+				isUserLoggedIn: 'isUserLoggedIn'
+			})
+		},
+
 		methods: {
+			...mapActions('authentication', ['login', 'logout']),
 			toggleCreation() {
 				this.$store.commit('activities/toggleCreation')
 			}
@@ -136,6 +160,23 @@
 				@media (hover) {
 					:hover {
 						@include activatedLink;
+					}
+				}
+
+				.logout {
+					display: flex;
+					flex-direction: column;
+					align-items: center;
+
+					.icon:hover {
+						background: $danger-color;
+						background: -webkit-linear-gradient(320deg, $danger-secondary-color 0%, $danger-color 100%);
+						-webkit-background-clip: text;
+						-webkit-text-fill-color: transparent;
+					}
+
+					.userName {
+						font-size: 10px;
 					}
 				}
 

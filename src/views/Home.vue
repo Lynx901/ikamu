@@ -8,25 +8,31 @@
 		</header>
 
 		<section v-if="creating && !loading" class="new-activity">
-			<Activity-Block :activity="newActivity" creating="true">
+			<Activity-Block :activity="newActivity"
+			                creating="true">
 			</Activity-Block>
 			<div class="form">
 				<form @submit.prevent="sendActivity">
 					<label class="email">
 						<i class="icon icon-email"></i>
-						<input class="email-input" placeholder="Escribe tu email..." v-model="newActivity.creatorEmail">
+						<input class="email-input"
+						       placeholder="Escribe tu email..."
+						       v-model="newActivity.creatorEmail">
 					</label>
 					<button type="submit" class="activity-send">Enviar</button>
 				</form>
 				<button class="activity-cancel" @click="cancelActivity">Descartar la nueva actividad</button>
 			</div>
 		</section>
-		<section v-if="showConfirmation" class="confirmation-message">
+		<section v-if="showConfirmation"
+		         class="confirmation-message">
 			<h3>¡La actividad se ha enviado correctamente!</h3>
 		</section>
 
 		<section v-if="!loading" class="activities">
-			<Activity-Block v-for="activity in activities" :activity="activity">
+			<Activity-Block v-for="activity in activities"
+			                :key="activity.id"
+			                :activity="activity">
 			</Activity-Block>
 		</section>
 		<section v-else class="loading">

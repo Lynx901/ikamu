@@ -2,6 +2,7 @@ import Vuex from 'vuex'
 import Vue from 'vue'
 import activities from './modules/activities'
 import app from './modules/app'
+import authentication from './modules/authentication'
 
 import VuexEasyFirestore from 'vuex-easy-firestore';
 import { Firebase, initFirebase } from './config/firebase.js'
@@ -18,6 +19,7 @@ const storeData = {
 
 	//Firebase modules should only be passed in the easyFirestore const, not here
 	modules: {
+		authentication,
 		app
 	},
 
