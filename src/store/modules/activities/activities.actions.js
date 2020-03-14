@@ -10,6 +10,7 @@ export default {
 	sendActivity({state, commit, dispatch}) {
 		commit('activeNewActivity');
 		dispatch("set", state.newActivity);
+		dispatch("users/{userId}/set", state.newActivity, {root: true});
 		commit('emptyNewActivity');
 		commit('setCreating', false);
 		commit('setConfirmation', true);

@@ -6,7 +6,7 @@
 		</header>
 		<header v-else class="name">
 			<fieldset class="help">
-				<legend>Título</legend>
+				<legend>Título:</legend>
 				<label>
 					<input placeholder="Escribe un título..." class="name-input" v-model="activity.name">
 				</label>
@@ -48,7 +48,7 @@
 		</ul>
 		<p v-if="opened && !creating" class="development">{{ activity.development }}</p>
 		<fieldset v-if="creating" class="development help">
-			<legend>Desarrollo</legend>
+			<legend>Desarrollo:</legend>
 			<label>
 				<textarea class="development-input" id="development" placeholder="Escribe el desarrollo de la actividad…" v-model="activity.development"></textarea>
 			</label>
@@ -57,9 +57,9 @@
 			<div class="data-upload">
 				<p v-if="!creating" class="creator" :title="activity.creator">{{ truncateName(activity.creator) }}</p>
 				<fieldset v-if="creating" class="help">
-					<legend>Autor</legend>
+					<legend>Autor: </legend> <span class="creator">{{ user.user.displayName }}</span>
 					<label>
-						<input placeholder="Escribe tu nombre..." class="data-input" v-model="activity.creator">
+						<input placeholder="Escribe el nombre que se mostrará..." class="data-input" v-model="activity.creator">
 					</label>
 				</fieldset>
 				<span v-if="!creating">
@@ -79,6 +79,7 @@
 	import typesParticipants from "@/constants/types-participants";
 	import typesDurations from "@/constants/types-durations";
 	import typesCategories from "@/constants/types-categories";
+	import {mapState} from "vuex";
 
 	export default {
 		name: "ActivityBlock",
@@ -116,6 +117,10 @@
 			}
 		},
 		computed:{
+			...mapState('authentication', {
+				user: 'user'
+			}),
+
 			likes: {
 				get() {
 					return this.$store.state.activities.data[this.activity.id].likes

@@ -12,7 +12,7 @@
 		</transition>
 
 		<nav class="nav-links">
-			<div class="nav-item" @click="toggleCreation">
+			<div v-if="isUserLoggedIn" class="nav-item" @click="toggleCreation">
 				<i class="icon icon-upload"
 				   role="img"
 				   title="Subir una nueva actividad">
@@ -72,6 +72,7 @@
 
 		methods: {
 			...mapActions('authentication', ['login', 'logout']),
+
 			toggleCreation() {
 				this.$store.commit('activities/toggleCreation')
 			}
